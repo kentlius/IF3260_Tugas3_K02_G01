@@ -572,6 +572,76 @@ export class Transform {
         ];
     }
 
+    get determinant(): number {
+        return (
+            this.x.x * this.y.y * this.z.z +
+            this.x.y * this.y.z * this.z.x +
+            this.x.z * this.y.x * this.z.y -
+            this.x.x * this.y.z * this.z.y -
+            this.x.y * this.y.x * this.z.z -
+            this.x.z * this.y.y * this.z.x
+        );
+    }
+
+    get position(): Vector3 {
+        return this.origin;
+    }
+
+    get rotation(): Quat {
+        let x = this.x;
+        let y = this.y;
+        let z = this.z;
+
+        y = y.sub(x.mul(x.dot(y)));
+        z = z.sub(x.mul(x.dot(z)));
+        z = z.sub(y.mul(y.dot(z)));
+        x = x.normalize();
+        y = y.normalize();
+        z = z.normalize();
+
+        const det =
+            x.x * y.y * z.z +
+            x.y * y.z * z.x +
+            x.z * y.x * z.y -
+            x.x * y.z * z.y -
+            x.y * y.x * z.z -
+            x.z * y.y * z.x;
+        if (det < 0) {
+            x = x.mul(-1);
+            y = y.mul(-1);
+            z = z.mul(-1);
+        }
+
+        const tr = x.x + y.y + z.z;
+        if (Math.abs(tr) >= 1e-3) {
+            const r = Math.sqrt(1 + tr);
+            const s = 0.5 / r;
+            return new Quat(0.5 * r, (z.y - y.z) * s, (x.z - z.x) * s, (y.x - x.y) * s);
+        } else {
+            let q: number[] = [];
+            const d = [[...x], [...y], [...z]];
+            const i: number = (x.x >= y.y) ? (x.x >= z.z ? 0 : 2) : (y.y >= z.z ? 1 : 2);
+            const j: number = (i + 1) % 3;
+            const k: number = (j + 1) % 3;
+            const r = Math.sqrt(d[i][i] - d[j][j] - d[k][k] + 1);
+            const s = 0.5 / r;
+            q[0] = (d[k][j] - d[j][k]) * s;
+            q[i + 1] = 0.5 * r;
+            q[j + 1] = (d[j][i] + d[i][j]) * s;
+            q[k + 1] = (d[k][i] + d[i][k]) * s;
+            return new Quat(q);
+        }
+    }
+
+    get scale(): Vector3 {
+        const d = Math.sign(this.determinant);
+        return new Vector3(
+            Math.sqrt(this.x.x * this.x.x + this.y.x * this.y.x + this.z.x + this.z.x) * d,
+            Math.sqrt(this.x.y * this.x.y + this.y.y * this.y.y + this.z.y + this.z.y) * d,
+            Math.sqrt(this.x.z * this.x.z + this.y.z * this.y.z + this.z.z + this.z.z) * d,
+        );
+    }
+
     mul(other: Vector3): Vector3;
     mul(other: Transform): Transform;
     mul(other: Vector3 | Transform): Vector3 | Transform {
@@ -704,6 +774,21 @@ export class Transform {
                 -(v20 * this.origin.x + v21 * this.origin.y + v22 * this.origin.z),
             ),
         );
+    }
+
+    orthonormalize(): Transform {
+        let x = this.x;
+        let y = this.y;
+        let z = this.z;
+
+        y = y.sub(x.mul(x.dot(y)));
+        z = z.sub(x.mul(x.dot(z)));
+        z = z.sub(y.mul(y.dot(z)));
+        x = x.normalize();
+        y = y.normalize();
+        z = z.normalize();
+
+        return new Transform(x, y, z, this.origin);
     }
 }
 
