@@ -919,6 +919,7 @@ export class PBRShader implements HasShader {
             gl.bindTexture(gl.TEXTURE_2D, this.normalTexture);
             shader.set_uniform("normalTexture", 1);
         }
+        shader.set_uniform("normalScale", this.normalScale ?? 1);
 
         if (this.doubleSided) {
             gl.disable(gl.CULL_FACE);

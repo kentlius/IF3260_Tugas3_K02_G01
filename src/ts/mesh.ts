@@ -162,8 +162,9 @@ export class Mesh implements Renderable {
         }
         const shader = this.shader.shader;
 
-        shader.set_uniformv("model_matrix", transform.to_matrix4x3());
-        shader.set_uniformv("camera_matrix", camera.to_matrix4x4());
+        shader.set_uniformv("modelMatrix", transform.to_matrix4x3());
+        shader.set_uniformv("cameraMatrix", camera.to_matrix4x4());
+        shader.set_uniform("cameraPosition", ...camera_position);
         shader.set_attrib_buffer("position", this.data_buffer, this.gl.FLOAT, false, 12, this.vertex_offset);
         shader.set_attrib_buffer("normal", this.data_buffer, this.gl.FLOAT, false, 12, this.normal_offset);
         if (this.uv_offset !== undefined) {
@@ -184,7 +185,7 @@ export class Mesh implements Renderable {
         if (this.weights_offset !== undefined) {
             shader.set_attrib_buffer("weight", this.data_buffer, this.gl.FLOAT, false, 16, this.weights_offset);
         } else {
-            shader.set_attrib("weight", 1, 0, 0, 0);
+            shader.set_attrib("weight", 0, 0, 0, 0);
         }
         if (this.tangent_offset !== undefined) {
             shader.set_attrib_buffer("tangent", this.data_buffer, this.gl.FLOAT, false, 12, this.tangent_offset);
