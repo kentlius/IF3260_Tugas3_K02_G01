@@ -1070,8 +1070,8 @@ function generateNormals(vertex: Float32Array): Float32Array {
         const d = 1 / Math.sqrt(nx * nx + ny * ny + nz * nz);
 
         normal[i + 6] = normal[i + 3] = normal[i] = nx * d;
-        normal[i + 7] = normal[i + 4] = normal[i + 2] = ny * d;
-        normal[i + 8] = normal[i + 5] = normal[i + 3] = nz * d;
+        normal[i + 7] = normal[i + 4] = normal[i + 1] = ny * d;
+        normal[i + 8] = normal[i + 5] = normal[i + 2] = nz * d;
     }
 
     return normal;
@@ -1154,9 +1154,9 @@ function generateTangents(vertex: Float32Array, normal: Float32Array, uv: Float3
         tz *= d;
 
         tangent[k + 8] = tangent[k + 4] = tangent[k] = tx;
-        tangent[k + 9] = tangent[k + 5] = tangent[k + 2] = ty;
-        tangent[k + 10] = tangent[k + 6] = tangent[k + 3] = tz;
-        tangent[k + 11] = tangent[k + 7] = tangent[k + 4] = b;
+        tangent[k + 9] = tangent[k + 5] = tangent[k + 1] = ty;
+        tangent[k + 10] = tangent[k + 6] = tangent[k + 2] = tz;
+        tangent[k + 11] = tangent[k + 7] = tangent[k + 3] = b;
     }
 
     return tangent;
