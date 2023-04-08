@@ -29,15 +29,7 @@ export class PerspectiveCamera implements Renderer {
     }
 
     render(renders: Iterable<Renderable>) {
-        this.canvas.width = this.canvas.clientWidth;
-        this.canvas.height = this.canvas.clientHeight;
-        const width = this.canvas.width;
-        const height = this.canvas.height;
-        const aspect = width / height;
-
-        this.gl.viewport(0, 0, width, height);
-        this.gl.clearColor(1.0, 1.0, 1.0, 1.0);
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+        const aspect = setupGLContext(this.gl, this.canvas);
 
         const persp = Perspective
             .perspective(this.fov, aspect, this.near, this.far);
@@ -71,15 +63,7 @@ export class OrthographicCamera implements Renderer {
     }
 
     render(renders: Iterable<Renderable>) {
-        this.canvas.width = this.canvas.clientWidth;
-        this.canvas.height = this.canvas.clientHeight;
-        const width = this.canvas.width;
-        const height = this.canvas.height;
-        const aspect = width / height;
-
-        this.gl.viewport(0, 0, width, height);
-        this.gl.clearColor(1.0, 1.0, 1.0, 1.0);
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+        const aspect = setupGLContext(this.gl, this.canvas);
 
         const top = this.size / 2;
         const bottom = -top;
@@ -95,4 +79,29 @@ export class OrthographicCamera implements Renderer {
 
         this.gl.flush();
     }
+}
+
+function setupGLContext(gl: WebGL2RenderingContext, canvas: HTMLCanvasElement): number {
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
+    const width = canvas.width;
+    const height = canvas.height;
+    const aspect = width / height;
+
+    gl.viewport(0, 0, width, height);
+    gl.clearColor(1.0, 1.0, 1.0, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LESS);
+    gl.depthMask(true);
+
+    gl.enable(gl.CULL_FACE);
+    gl.frontFace(gl.CCW);
+    gl.cullFace(gl.BACK);
+
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
+    return aspect;
 }

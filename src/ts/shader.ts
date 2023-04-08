@@ -196,35 +196,51 @@ class AttributeData {
     set_attrib_buffer(gl: WebGL2RenderingContext, type: number, normalized: boolean, stride: number, offset: number) {
         switch (this.type) {
             case 0x1406: // FLOAT
-            case 0x1404: // INT
-            case 0x8B56: // BOOL
-            case 0x1405: // UNSIGNED_INT
                 gl.enableVertexAttribArray(this.loc);
                 gl.vertexAttribPointer(this.loc, 1, type, normalized, stride, offset);
                 break;
 
+            case 0x1404: // INT
+            case 0x8B56: // BOOL
+            case 0x1405: // UNSIGNED_INT
+                gl.enableVertexAttribArray(this.loc);
+                gl.vertexAttribIPointer(this.loc, 1, type, stride, offset);
+                break;
+
             case 0x8B50: // FLOAT_VEC2
-            case 0x8B53: // INT_VEC2
-            case 0x8B57: // BOOL_VEC2
-            case 0x8DC6: // UNSIGNED_INT_VEC2
                 gl.enableVertexAttribArray(this.loc);
                 gl.vertexAttribPointer(this.loc, 2, type, normalized, stride, offset);
                 break;
 
+            case 0x8B53: // INT_VEC2
+            case 0x8B57: // BOOL_VEC2
+            case 0x8DC6: // UNSIGNED_INT_VEC2
+                gl.enableVertexAttribArray(this.loc);
+                gl.vertexAttribIPointer(this.loc, 2, type, stride, offset);
+                break;
+
             case 0x8B51: // FLOAT_VEC3
-            case 0x8B54: // INT_VEC3
-            case 0x8B58: // BOOL_VEC3
-            case 0x8DC7: // UNSIGNED_INT_VEC3
                 gl.enableVertexAttribArray(this.loc);
                 gl.vertexAttribPointer(this.loc, 3, type, normalized, stride, offset);
                 break;
 
+            case 0x8B54: // INT_VEC3
+            case 0x8B58: // BOOL_VEC3
+            case 0x8DC7: // UNSIGNED_INT_VEC3
+                gl.enableVertexAttribArray(this.loc);
+                gl.vertexAttribIPointer(this.loc, 3, type, stride, offset);
+                break;
+
             case 0x8B52: // FLOAT_VEC4
+                gl.enableVertexAttribArray(this.loc);
+                gl.vertexAttribPointer(this.loc, 4, type, normalized, stride, offset);
+                break;
+
             case 0x8B55: // INT_VEC4
             case 0x8B59: // BOOL_VEC4
             case 0x8DC8: // UNSIGNED_INT_VEC4
                 gl.enableVertexAttribArray(this.loc);
-                gl.vertexAttribPointer(this.loc, 4, type, normalized, stride, offset);
+                gl.vertexAttribIPointer(this.loc, 4, type, stride, offset);
                 break;
         }
     }
@@ -326,6 +342,16 @@ export class Shader implements HasShader {
     }
 
     render(count: number, indexed: boolean = false) {
+        this.gl.useProgram(this.program);
+        if (indexed) {
+            this.gl.drawElements(this.gl.TRIANGLES, count, this.gl.UNSIGNED_SHORT, 0);
+        } else {
+            this.gl.drawArrays(this.gl.TRIANGLES, 0, count);
+        }
+        this.gl.useProgram(null);
+    }
+
+    resetGL(): void {
         this.gl.enable(this.gl.DEPTH_TEST);
         this.gl.depthFunc(this.gl.LESS);
         this.gl.depthMask(true);
@@ -336,14 +362,6 @@ export class Shader implements HasShader {
 
         this.gl.enable(this.gl.BLEND);
         this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
-
-        this.gl.useProgram(this.program);
-        if (indexed) {
-            this.gl.drawElements(this.gl.TRIANGLES, count, this.gl.UNSIGNED_SHORT, 0);
-        } else {
-            this.gl.drawArrays(this.gl.TRIANGLES, 0, count);
-        }
-        this.gl.useProgram(null);
     }
 }
 
