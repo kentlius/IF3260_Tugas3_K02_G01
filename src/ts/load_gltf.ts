@@ -848,17 +848,15 @@ async function processGltf(gl: WebGL2RenderingContext, data: GltfData, shader: H
                     new Vector3(matrix[12], matrix[13], matrix[14]),
                 );
             } else {
-                let t = Transform.IDENTITY;
                 if (scale !== undefined) {
-                    t = t.pre_scale(new Vector3(scale));
+                    ret.scale = new Vector3(scale);
                 }
                 if (rotation !== undefined) {
-                    t = t.pre_rotate(new Quat(rotation));
+                    ret.rotation = new Quat(rotation);
                 }
                 if (translation !== undefined) {
-                    t = t.pre_translate(new Vector3(translation));
+                    ret.translation = new Vector3(translation);
                 }
-                ret.transform = t;
             }
 
             if (mesh !== undefined) {

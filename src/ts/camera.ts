@@ -1,4 +1,4 @@
-import { Perspective, Transform, Vector2, Vector3 } from "./primitive.js";
+import { Perspective, Quat, Transform, Vector2, Vector3 } from "./primitive.js";
 
 export interface Renderable {
     render(transform: Transform, camera: Perspective, camera_position: Vector3): void;
@@ -6,21 +6,61 @@ export interface Renderable {
 
 export interface Renderer {
     render(renders: Iterable<Renderable>): void;
-    transform: Transform;
+    get transform(): Transform;
 }
 
-export class PerspectiveCamera implements Renderer {
+abstract class CameraBase implements Renderer {
     readonly gl: WebGL2RenderingContext;
     readonly canvas: HTMLCanvasElement;
+    translation: Vector3 = Vector3.ZERO;
+    rotation: Quat = Quat.IDENTITY;
+    scale: Vector3 = Vector3.ONE;
 
-    transform: Transform;
+    constructor(gl: WebGL2RenderingContext, canvas: HTMLCanvasElement) {
+        this.gl = gl;
+        this.canvas = canvas;
+    }
+
+    get transform(): Transform {
+        const { x, y, z } = this.rotation.to_transform();
+        return new Transform(
+            x.mul(this.scale),
+            y.mul(this.scale),
+            z.mul(this.scale),
+            this.translation,
+        );
+    }
+
+    set transform(v: Transform) {
+        this.translation = v.position;
+        this.rotation = v.rotation;
+        this.scale = v.scale;
+    }
+
+    abstract render(renders: Iterable<Renderable>): void;
+
+    protected setupGLContext(): number {
+        this.canvas.width = this.canvas.clientWidth;
+        this.canvas.height = this.canvas.clientHeight;
+        const width = this.canvas.width;
+        const height = this.canvas.height;
+        const aspect = width / height;
+
+        this.gl.viewport(0, 0, width, height);
+        this.gl.clearColor(1.0, 1.0, 1.0, 1.0);
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+
+        return aspect;
+    }
+}
+
+export class PerspectiveCamera extends CameraBase {
     fov: number;
     near: number;
     far: number;
 
     constructor(gl: WebGL2RenderingContext, canvas: HTMLCanvasElement, fov: number = Math.PI / 2, near: number = 0.05, far: number = 100) {
-        this.gl = gl;
-        this.canvas = canvas;
+        super(gl, canvas);
 
         this.transform = Transform.IDENTITY;
         this.fov = fov;
@@ -29,7 +69,7 @@ export class PerspectiveCamera implements Renderer {
     }
 
     render(renders: Iterable<Renderable>) {
-        const aspect = setupGLContext(this.gl, this.canvas);
+        const aspect = this.setupGLContext();
 
         const persp = Perspective
             .perspective(this.fov, aspect, this.near, this.far);
@@ -43,18 +83,13 @@ export class PerspectiveCamera implements Renderer {
     }
 }
 
-export class OrthographicCamera implements Renderer {
-    readonly gl: WebGL2RenderingContext;
-    readonly canvas: HTMLCanvasElement;
-
-    transform: Transform;
+export class OrthographicCamera extends CameraBase {
     size: number;
     near: number;
     far: number;
 
     constructor(gl: WebGL2RenderingContext, canvas: HTMLCanvasElement, size: number = 20, near: number = 0, far: number = 100) {
-        this.gl = gl;
-        this.canvas = canvas;
+        super(gl, canvas);
 
         this.transform = Transform.IDENTITY;
         this.size = size;
@@ -63,7 +98,7 @@ export class OrthographicCamera implements Renderer {
     }
 
     render(renders: Iterable<Renderable>) {
-        const aspect = setupGLContext(this.gl, this.canvas);
+        const aspect = this.setupGLContext();
 
         const top = this.size / 2;
         const bottom = -top;
@@ -79,29 +114,4 @@ export class OrthographicCamera implements Renderer {
 
         this.gl.flush();
     }
-}
-
-function setupGLContext(gl: WebGL2RenderingContext, canvas: HTMLCanvasElement): number {
-    canvas.width = canvas.clientWidth;
-    canvas.height = canvas.clientHeight;
-    const width = canvas.width;
-    const height = canvas.height;
-    const aspect = width / height;
-
-    gl.viewport(0, 0, width, height);
-    gl.clearColor(1.0, 1.0, 1.0, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-    gl.enable(gl.DEPTH_TEST);
-    gl.depthFunc(gl.LESS);
-    gl.depthMask(true);
-
-    gl.enable(gl.CULL_FACE);
-    gl.frontFace(gl.CCW);
-    gl.cullFace(gl.BACK);
-
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-
-    return aspect;
 }

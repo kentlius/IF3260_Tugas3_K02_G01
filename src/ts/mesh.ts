@@ -218,8 +218,9 @@ export class MeshInstance extends Node3D {
     }
 
     render(transform: Transform, camera: Perspective, camera_position: Vector3): void {
+        const tr = transform.mul(this.transform);
         for (const mesh of this.meshes) {
-            mesh.render(transform, camera, camera_position);
+            mesh.render(tr, camera, camera_position);
         }
 
         super.render(transform, camera, camera_position);
