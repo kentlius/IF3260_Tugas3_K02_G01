@@ -216,6 +216,27 @@ export type GltfData = {
         skin?: number,
         name?: string,
     }>,
+    skins?: Array<{
+        joints: number[],
+        skeletion?: number,
+        inverseBindMatrices?: number[],
+        name?: string,
+    }>,
+    animations?: Array<{
+        channels: Array<{
+            sampler: number,
+            target: {
+                node: number,
+                path: string,
+            },
+        }>,
+        samplers: Array<{
+            input: number,
+            output: number,
+            interpolation?: string,
+        }>,
+        name?: string,
+    }>,
     scenes?: Array<{
         nodes?: number[],
         name?: string,
@@ -866,6 +887,8 @@ async function processGltf(gl: WebGL2RenderingContext, data: GltfData, shader: H
             return ret;
         }
     );
+
+    // TODO: Skinning, animation
 
     const scenes = data.scenes === undefined ? undefined : new CachedArray(
         data.scenes,
