@@ -65,16 +65,18 @@ async function loadGlbStream(gl: WebGL2RenderingContext, stream: ReadableStream<
                         start = 0;
                     }
 
+                    let l;
                     if ((buf.length - start) >= bytes) {
                         ret.set(buf.subarray(start, start + bytes), offset);
-                        start += offset;
-                        bytes = 0;
+                        l = bytes;
                     } else {
                         const b = buf.subarray(start);
                         ret.set(b, offset);
-                        start += b.length;
-                        bytes -= b.length;
+                        l = b.length;
                     }
+                    start += l;
+                    offset += l;
+                    bytes -= l;
                 }
 
                 return {
@@ -271,9 +273,8 @@ async function processGltf(gl: WebGL2RenderingContext, data: GltfData, shader: H
     const buffers = data.buffers === undefined ? (buf === undefined ? undefined : new CachedArray([buf], (v) => v)) : new CachedArray(
         data.buffers,
         async ({ uri, byteLength, name }, i) => {
-            const ret = new Uint8Array(byteLength);
-
             if (uri !== undefined) {
+                const ret = new Uint8Array(byteLength);
                 const res = await fetch(uri);
                 if (!res.ok) {
                     throw new Error(`Response error (code ${res.status} ${res.statusText})`);
@@ -293,11 +294,13 @@ async function processGltf(gl: WebGL2RenderingContext, data: GltfData, shader: H
                     ret.set(value, c);
                     c += value.length;
                 }
+                return ret;
+            } else if ((i === 0) && (buf !== undefined)) {
+                return buf;
             } else {
                 console.warn(`Buffer ${i} has no data`);
+                return undefined;
             }
-
-            return ret;
         }
     );
 
@@ -328,6 +331,7 @@ async function processGltf(gl: WebGL2RenderingContext, data: GltfData, shader: H
             byteOffset,
             normalized,
             sparse,
+            name,
         }) => {
             let ret: TypedArray;
 
@@ -432,7 +436,7 @@ async function processGltf(gl: WebGL2RenderingContext, data: GltfData, shader: H
             }
             if (stride === 0) {
                 stride = sz * n;
-                if (stride & 3) {
+                if (type.startsWith("MAT") && (stride & 3)) {
                     stride = (stride & -4) + 4;
                 }
             }
@@ -440,8 +444,9 @@ async function processGltf(gl: WebGL2RenderingContext, data: GltfData, shader: H
             if (data !== undefined) {
                 for (let i = 0; i < count; i++) {
                     const j = i * n;
+                    const j_ = i * stride;
                     for (let k = 0; k < n; k++) {
-                        ret[j + k] = f(data, j * stride + k * sz);
+                        ret[j + k] = f(data, j_ + k * sz);
                     }
                 }
             }
@@ -464,6 +469,7 @@ async function processGltf(gl: WebGL2RenderingContext, data: GltfData, shader: H
         async ({
             uri,
             bufferView,
+            mimeType,
             name,
         }, i) => {
             let ret = new Image();
@@ -482,14 +488,17 @@ async function processGltf(gl: WebGL2RenderingContext, data: GltfData, shader: H
 
                 const buf = view.buffer.subarray(view.byteOffset, view.byteOffset + view.byteLength);
 
-                ret.src = uri = URL.createObjectURL(new Blob([buf]));
+                ret.src = URL.createObjectURL(new Blob([buf], { type: mimeType }));
                 try {
                     await new Promise((resolve, reject) => {
                         ret.addEventListener("load", resolve);
-                        ret.addEventListener("error", (e) => reject(new Error(`Cannot load image ${name ?? i}`)));
+                        ret.addEventListener("error", (e) => {
+                            console.log(name ?? i, buf.length);
+                            reject(new Error(`Cannot load image ${name ?? i}`));
+                        });
                     });
                 } finally {
-                    URL.revokeObjectURL(uri);
+                    URL.revokeObjectURL(ret.src);
                 }
             } else {
                 throw new Error(`No URL or buffer set in image ${name ?? i}`);
@@ -663,7 +672,7 @@ async function processGltf(gl: WebGL2RenderingContext, data: GltfData, shader: H
                 tex_[2] = defaultNormTexture();
             }
 
-            switch (alphaMode) {
+            switch (alphaMode ?? "OPAQUE") {
                 case "OPAQUE":
                     ret.alphaCutoff = 0;
                     break;
@@ -893,11 +902,12 @@ async function processGltf(gl: WebGL2RenderingContext, data: GltfData, shader: H
     const scenes = data.scenes === undefined ? undefined : new CachedArray(
         data.scenes,
         (scene) => {
-            Promise.all((scene.nodes ?? []).map((v) => nodes?.get(v)))
+            const v = (scene.nodes ?? []).map((v) => nodes?.get(v));
+            return Promise.all(v)
         }
     );
 
-    return data.scene === undefined ? [] : await scenes?.get(data.scene) ?? [];
+    return (await scenes?.get(data.scene ?? 0) ?? []) as Node3D[];
 }
 
 export class PBRShader implements HasShader {

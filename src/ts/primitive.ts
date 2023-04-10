@@ -636,9 +636,9 @@ export class Transform {
     get scale(): Vector3 {
         const d = Math.sign(this.determinant);
         return new Vector3(
-            Math.sqrt(this.x.x * this.x.x + this.y.x * this.y.x + this.z.x + this.z.x) * d,
-            Math.sqrt(this.x.y * this.x.y + this.y.y * this.y.y + this.z.y + this.z.y) * d,
-            Math.sqrt(this.x.z * this.x.z + this.y.z * this.y.z + this.z.z + this.z.z) * d,
+            Math.sqrt(this.x.x * this.x.x + this.y.x * this.y.x + this.z.x * this.z.x) * d,
+            Math.sqrt(this.x.y * this.x.y + this.y.y * this.y.y + this.z.y * this.z.y) * d,
+            Math.sqrt(this.x.z * this.x.z + this.y.z * this.y.z + this.z.z * this.z.z) * d,
         );
     }
 

@@ -1,6 +1,6 @@
-import { Renderable } from "./camera";
-import { Node3D } from "./node_tree";
-import { Perspective, Transform, Vector3 } from "./primitive";
+import { Renderable } from "./camera.js";
+import { Node3D } from "./node_tree.js";
+import { Perspective, Transform, Vector3 } from "./primitive.js";
 import { HasShader } from "./shader.js";
 
 export type MeshData = {

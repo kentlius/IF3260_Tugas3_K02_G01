@@ -47,7 +47,7 @@ abstract class CameraBase implements Renderer {
         const aspect = width / height;
 
         this.gl.viewport(0, 0, width, height);
-        this.gl.clearColor(1.0, 1.0, 1.0, 1.0);
+        this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
         return aspect;
@@ -62,7 +62,6 @@ export class PerspectiveCamera extends CameraBase {
     constructor(gl: WebGL2RenderingContext, canvas: HTMLCanvasElement, fov: number = Math.PI / 2, near: number = 0.05, far: number = 100) {
         super(gl, canvas);
 
-        this.transform = Transform.IDENTITY;
         this.fov = fov;
         this.near = near;
         this.far = far;
@@ -91,7 +90,6 @@ export class OrthographicCamera extends CameraBase {
     constructor(gl: WebGL2RenderingContext, canvas: HTMLCanvasElement, size: number = 20, near: number = 0, far: number = 100) {
         super(gl, canvas);
 
-        this.transform = Transform.IDENTITY;
         this.size = size;
         this.near = near;
         this.far = far;

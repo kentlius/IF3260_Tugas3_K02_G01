@@ -16,7 +16,7 @@ in vec3 fragNormal;
 in vec2 fragUV;
 in vec4 fragColor;
 in vec3 fragTangent;
-in flat lowp float fragBitangent;
+flat in lowp float fragBitangent;
 
 out vec4 outColor;
 
@@ -29,12 +29,12 @@ vec4 linearToSrgb(in vec4 color) {
 }
 
 void orthonormalize(inout mat3 mat) {
-    mat.y -= dot(mat.x, mat.y) * mat.y;
-    mat.z -= dot(mat.x, mat.z) * mat.z;
-    mat.z -= dot(mat.y, mat.z) * mat.z;
-    mat.x = normalize(mat.x);
-    mat.y = normalize(mat.y);
-    mat.z = normalize(mat.z);
+    mat[1] -= dot(mat[0], mat[1]) * mat[1];
+    mat[2] -= dot(mat[0], mat[2]) * mat[2];
+    mat[2] -= dot(mat[1], mat[2]) * mat[2];
+    mat[0] = normalize(mat[0]);
+    mat[1] = normalize(mat[1]);
+    mat[2] = normalize(mat[2]);
 }
 
 void main() {
@@ -45,17 +45,17 @@ void main() {
     mat3 tangentSpace = mat3(
         fragNormal,
         fragTangent,
-        cross(fragNormal, fragTangent) * sign(fragBitangent),
+        cross(fragNormal, fragTangent) * sign(fragBitangent)
     );
 
     orthonormalize(tangentSpace);
 
-    vec3 normal = (texture(normalTexture, fragUV).xyz - 0.5) * 2;
+    vec3 normal = (texture(normalTexture, fragUV).xyz - 0.5) * 2.0;
     normal = normalScale * (tangentSpace * normal);
 
     float lambert = dot(normal, normalize(lightDir));
 
     vec3 light = color.rgb;
-    light = light * Ka + light * max(lambert, 0);
+    light = light * Ka + light * max(lambert, 0.0);
     outColor = linearToSrgb(vec4(light, color.a));
 }

@@ -1,7 +1,16 @@
 import { Renderable } from "./camera.js";
 import { Perspective, Quat, Transform, Vector3 } from "./primitive.js";
 
-export class Node3D implements Renderable {
+export interface HasTransform {
+    translation: Vector3;
+    rotation: Quat;
+    scale: Vector3;
+
+    get transform(): Transform;
+    set transform(transform: Transform);
+}
+
+export class Node3D implements Renderable, HasTransform {
     private _parent?: Node3D;
     private _children: Node3D[];
 
