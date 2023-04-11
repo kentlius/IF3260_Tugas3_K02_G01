@@ -386,31 +386,31 @@ async function processGltf(gl: WebGL2RenderingContext, data: GltfData, shader: H
 
                 case gl.SHORT:
                     sz = 2;
-                    f = (data, i) => data.getInt16(i);
+                    f = (data, i) => data.getInt16(i, true);
                     ret = new Int16Array(count * n);
                     break;
 
                 case gl.UNSIGNED_SHORT:
                     sz = 2;
-                    f = (data, i) => data.getUint16(i);
+                    f = (data, i) => data.getUint16(i, true);
                     ret = new Uint16Array(count * n);
                     break;
 
                 case gl.INT:
                     sz = 4;
-                    f = (data, i) => data.getInt32(i);
+                    f = (data, i) => data.getInt32(i, true);
                     ret = new Int32Array(count * n);
                     break;
 
                 case gl.UNSIGNED_INT:
                     sz = 4;
-                    f = (data, i) => data.getUint32(i);
+                    f = (data, i) => data.getUint32(i, true);
                     ret = new Uint32Array(count * n);
                     break;
 
                 case gl.FLOAT:
                     sz = 4;
-                    f = (data, i) => data.getFloat32(i);
+                    f = (data, i) => data.getFloat32(i, true);
                     ret = new Float32Array(count * n);
                     break;
 
@@ -1060,8 +1060,8 @@ class AccessorData {
 function indicesExpand(v: Float32Array, n: number, ind: ArrayLike<number>): Float32Array {
     const ret = new Float32Array(ind.length * n);
     for (let i = 0; i < ind.length; i++) {
-        const j = ind[i];
-        ret.set(v.subarray(j, j + n), i);
+        const j = ind[i] * n;
+        ret.set(v.subarray(j, j + n), i * n);
     }
     return ret;
 }
@@ -1069,8 +1069,8 @@ function indicesExpand(v: Float32Array, n: number, ind: ArrayLike<number>): Floa
 function indicesExpandUShort(v: Uint16Array, n: number, ind: ArrayLike<number>): Uint16Array {
     const ret = new Uint16Array(ind.length * n);
     for (let i = 0; i < ind.length; i++) {
-        const j = ind[i];
-        ret.set(v.subarray(j, j + n), i);
+        const j = ind[i] * n;
+        ret.set(v.subarray(j, j + n), i * n);
     }
     return ret;
 }
