@@ -117,7 +117,7 @@ export class Mesh implements Renderable {
         if (color !== undefined) {
             const a = new Uint8Array(buf, this.color_offset, this.vertex_count * 4);
             for (let i = 0; i < a.length; i++) {
-                a[i] = (color[i] * 255) | 0;
+                a[i] = Math.min(Math.max((color[i] * 255) | 0, 0), 255);
             }
         }
         if (joints !== undefined) {
@@ -193,9 +193,9 @@ export class Mesh implements Renderable {
             shader.set_attrib("tangent", 0, 1, 0);
         }
         if (this.bitangent_offset !== undefined) {
-            shader.set_attrib_buffer("bitangent", this.data_buffer, this.gl.BYTE, false, 1, this.bitangent_offset);
+            shader.set_attrib_buffer("bitangent", this.data_buffer, this.gl.UNSIGNED_BYTE, false, 1, this.bitangent_offset);
         } else {
-            shader.set_attrib("bitangent", 0);
+            shader.set_attrib("bitangent", 0, 0, 0, 0);
         }
 
         if (this.index_count === undefined) {
