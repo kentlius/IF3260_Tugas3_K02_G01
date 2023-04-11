@@ -4,12 +4,12 @@ precision highp float;
 
 in vec3 position;
 in vec3 normal;
+in vec3 tangent;
+in lowp float bitangent;
 in vec2 uv;
 in vec4 color;
 in uvec4 joint;
 in vec4 weight;
-in vec3 tangent;
-in lowp float bitangent;
 
 uniform mat4x3 modelMatrix;
 uniform mat4 cameraMatrix;
@@ -31,7 +31,7 @@ void main() {
 
     mat3 basisMatrix = mat3(modelMatrix);
     fragNormal = normalize(basisMatrix * normal);
-    fragTangent = normalize(basisMatrix * tangent);
+    fragTangent = tangent; //normalize(basisMatrix * tangent);
     fragBitangent = (bitangent > 0.0) ? 1.0 : -1.0;
 
     fragUV = uv;

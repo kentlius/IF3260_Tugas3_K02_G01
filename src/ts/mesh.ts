@@ -133,9 +133,9 @@ export class Mesh implements Renderable {
                 a[j + 1] = tangent[i + 1];
                 a[j + 2] = tangent[i + 2];
             }
-            const b = new Uint8Array(buf, this.bitangent_offset, this.vertex_count);
-            for (let i = 0, j = 0; i < tangent.length; i += 4, j++) {
-                b[j] = tangent[i] >= 0 ? 1 : 0;
+            const b = new Int8Array(buf, this.bitangent_offset, this.vertex_count);
+            for (let i = 3, j = 0; i < tangent.length; i += 4, j++) {
+                b[j] = Math.sign(tangent[i]);
             }
         }
 
@@ -193,9 +193,9 @@ export class Mesh implements Renderable {
             shader.set_attrib("tangent", 0, 1, 0);
         }
         if (this.bitangent_offset !== undefined) {
-            shader.set_attrib_buffer("bitangent", this.data_buffer, this.gl.UNSIGNED_BYTE, false, 1, this.bitangent_offset);
+            shader.set_attrib_buffer("bitangent", this.data_buffer, this.gl.BYTE, false, 1, this.bitangent_offset);
         } else {
-            shader.set_attrib("bitangent", 0);
+            shader.set_attrib("bitangent", 1);
         }
 
         if (this.index_count === undefined) {

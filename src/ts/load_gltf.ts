@@ -1178,7 +1178,7 @@ function generateTangents(vertex: Float32Array, normal: Float32Array, uv: Float3
             nx * tz * uy -
             ny * tx * uz -
             nz * ty * ux;
-        const b = d >= 0 ? 1 : 0;
+        const b = Math.sign(d);
 
         d = 1 / Math.sqrt(tx * tx + ty * ty + tz * tz);
         tx *= d;

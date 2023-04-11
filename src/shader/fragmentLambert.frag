@@ -3,7 +3,7 @@
 precision highp float;
 
 const vec3 lightDir = vec3(1.0, 1.0, -1.0);
-const lowp vec3 Ka = vec3(0.7, 0.7, 0.7);
+const lowp vec3 Ka = vec3(0.5, 0.5, 0.5);
 const lowp vec3 Kd = vec3(0.3, 0.3, 0.3);
 
 uniform sampler2D baseTexture;
@@ -43,9 +43,9 @@ void main() {
     color = srgbToLinear(color) * fragColor * baseTextureFactor;
 
     mat3 tangentSpace = mat3(
-        fragNormal,
+        cross(fragNormal, fragTangent) * sign(fragBitangent),
         fragTangent,
-        cross(fragNormal, fragTangent) * sign(fragBitangent)
+        fragNormal
     );
 
     orthonormalize(tangentSpace);
@@ -55,7 +55,7 @@ void main() {
 
     float lambert = dot(normal, normalize(lightDir));
 
-    vec3 light = color.rgb;
-    light = light * Ka + light * max(lambert, 0.0);
+    vec3 light = vec3(1, 1, 1);//color.rgb;
+    light = light * Ka + light * max(lambert, 0.0) * Kd;
     outColor = linearToSrgb(vec4(light, color.a));
 }
