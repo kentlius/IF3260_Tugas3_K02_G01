@@ -50,6 +50,17 @@ abstract class CameraBase implements Renderer {
         this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
+        this.gl.enable(this.gl.DEPTH_TEST);
+        this.gl.depthFunc(this.gl.LESS);
+        this.gl.depthMask(true);
+
+        this.gl.enable(this.gl.CULL_FACE);
+        this.gl.frontFace(this.gl.CCW);
+        this.gl.cullFace(this.gl.BACK);
+
+        this.gl.enable(this.gl.BLEND);
+        this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
+
         return aspect;
     }
 }
@@ -75,7 +86,7 @@ export class PerspectiveCamera extends CameraBase {
         const mview = this.transform.inverse().post_scale(new Vector3(1, 1, -1));
 
         for (let r of renders) {
-            r.render(mview, persp, this.transform.origin);
+            r.render(mview, persp, this.translation);
         }
 
         this.gl.flush();
@@ -107,7 +118,7 @@ export class OrthographicCamera extends CameraBase {
         const mview = this.transform.inverse().post_scale(new Vector3(1, 1, -1));
 
         for (let r of renders) {
-            r.render(mview, ortho, this.transform.origin);
+            r.render(mview, ortho, this.translation);
         }
 
         this.gl.flush();
