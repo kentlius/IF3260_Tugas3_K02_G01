@@ -17,6 +17,7 @@ async function main(): Promise<void> {
 
     let objects: Node3D[] = [];
     const camera = new PerspectiveCamera(gl, canvas);
+    camera.translation = new Vector3(0, 0, -1);
 
     loadGlb(gl, "model/RobotArmPacked.glb", await registry.make_shader("shader/vertex.vert", "shader/fragmentLambert.frag")).then((v) => {
         objects = v;
