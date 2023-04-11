@@ -195,7 +195,7 @@ export class Mesh implements Renderable {
         if (this.bitangent_offset !== undefined) {
             shader.set_attrib_buffer("bitangent", this.data_buffer, this.gl.UNSIGNED_BYTE, false, 1, this.bitangent_offset);
         } else {
-            shader.set_attrib("bitangent", 0, 0, 0, 0);
+            shader.set_attrib("bitangent", 0);
         }
 
         if (this.index_count === undefined) {
