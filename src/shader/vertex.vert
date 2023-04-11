@@ -9,7 +9,7 @@ in vec4 color;
 in uvec4 joint;
 in vec4 weight;
 in vec3 tangent;
-in uint bitangent;
+in lowp float bitangent;
 
 uniform mat4x3 modelMatrix;
 uniform mat4 cameraMatrix;
@@ -32,7 +32,7 @@ void main() {
     mat3 basisMatrix = mat3(modelMatrix);
     fragNormal = normalize(basisMatrix * normal);
     fragTangent = normalize(basisMatrix * tangent);
-    fragBitangent = (bitangent > 0U) ? 1.0 : -1.0;
+    fragBitangent = (bitangent > 0.0) ? 1.0 : -1.0;
 
     fragUV = uv;
     fragColor = color;
