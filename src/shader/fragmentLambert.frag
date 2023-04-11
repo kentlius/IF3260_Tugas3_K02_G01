@@ -55,7 +55,7 @@ void main() {
 
     float lambert = dot(normal, normalize(lightDir));
 
-    vec3 light = vec3(1, 1, 1);//color.rgb;
+    vec3 light = color.rgb;
     light = light * Ka + light * max(lambert, 0.0) * Kd;
     outColor = linearToSrgb(vec4(light, color.a));
 }
