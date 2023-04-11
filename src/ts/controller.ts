@@ -68,21 +68,21 @@ export function processKey(delta: number, camera: HasTransform) {
         camera.translation = camera.translation.add(quat.mul(new Vector3(0, 0, -moveRate * delta)));
     }
     if (keystate.lookUp) {
-        camera.rotation = Quat.from_axis_angle(Vector3.RIGHT, rotateRate * delta).mul(camera.rotation);
+        camera.rotation = camera.rotation.mul(Quat.from_axis_angle(Vector3.RIGHT, rotateRate * delta));
     }
     if (keystate.lookDown) {
-        camera.rotation = Quat.from_axis_angle(Vector3.LEFT, rotateRate * delta).mul(camera.rotation);
+        camera.rotation = camera.rotation.mul(Quat.from_axis_angle(Vector3.LEFT, rotateRate * delta));
     }
     if (keystate.lookLeft) {
-        camera.rotation = Quat.from_axis_angle(Vector3.UP, rotateRate * delta).mul(camera.rotation);
+        camera.rotation = camera.rotation.mul(Quat.from_axis_angle(Vector3.UP, rotateRate * delta));
     }
     if (keystate.lookRight) {
-        camera.rotation = Quat.from_axis_angle(Vector3.DOWN, rotateRate * delta).mul(camera.rotation);
+        camera.rotation = camera.rotation.mul(Quat.from_axis_angle(Vector3.DOWN, rotateRate * delta));
     }
     if (keystate.rotateLeft) {
-        camera.rotation = Quat.from_axis_angle(Vector3.FRONT, rotateRate * delta).mul(camera.rotation);
+        camera.rotation = camera.rotation.mul(Quat.from_axis_angle(Vector3.FRONT, rotateRate * delta));
     }
     if (keystate.rotateRight) {
-        camera.rotation = Quat.from_axis_angle(Vector3.BACK, rotateRate * delta).mul(camera.rotation);
+        camera.rotation = camera.rotation.mul(Quat.from_axis_angle(Vector3.BACK, rotateRate * delta));
     }
 }
