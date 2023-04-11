@@ -82,11 +82,11 @@ export class PerspectiveCamera extends CameraBase {
         const aspect = this.setupGLContext();
 
         const persp = Perspective
-            .perspective(this.fov, aspect, this.near, this.far);
-        const mview = this.transform.inverse().post_scale(new Vector3(1, 1, -1));
+            .perspective(this.fov, aspect, this.near, this.far)
+            .mul(this.transform.inverse().post_scale(new Vector3(1, 1, -1)));
 
         for (let r of renders) {
-            r.render(mview, persp, this.translation);
+            r.render(Transform.IDENTITY, persp, this.translation);
         }
 
         this.gl.flush();
@@ -114,11 +114,12 @@ export class OrthographicCamera extends CameraBase {
         const right = top * aspect;
         const left = -right;
 
-        const ortho = Perspective.orthogonal(top, bottom, left, right, this.near, this.far);
-        const mview = this.transform.inverse().post_scale(new Vector3(1, 1, -1));
+        const ortho = Perspective
+            .orthogonal(top, bottom, left, right, this.near, this.far)
+            .mul(this.transform.inverse().post_scale(new Vector3(1, 1, -1)));
 
         for (let r of renders) {
-            r.render(mview, ortho, this.translation);
+            r.render(Transform.IDENTITY, ortho, this.translation);
         }
 
         this.gl.flush();
