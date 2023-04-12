@@ -882,7 +882,12 @@ async function processGltf(gl: WebGL2RenderingContext, data: GltfData, shader: H
                     ret.scale = new Vector3(scale);
                 }
                 if (rotation !== undefined) {
-                    ret.rotation = new Quat(rotation);
+                    ret.rotation = new Quat(
+                        rotation[3],
+                        rotation[0],
+                        rotation[1],
+                        rotation[2],
+                    );
                 }
                 if (translation !== undefined) {
                     ret.translation = new Vector3(translation);
