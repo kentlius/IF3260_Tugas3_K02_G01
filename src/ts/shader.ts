@@ -299,7 +299,13 @@ export class Shader implements HasShader {
                 continue;
             }
 
-            this.attribute_loc.set(info.name, new AttributeData(i, info.type));
+            this.attribute_loc.set(
+                info.name,
+                new AttributeData(
+                    gl.getAttribLocation(program, info.name),
+                    info.type,
+                ),
+            );
         }
     }
 
