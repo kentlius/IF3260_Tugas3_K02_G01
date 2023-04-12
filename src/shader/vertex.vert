@@ -31,7 +31,7 @@ void main() {
 
     mat3 basisMatrix = mat3(modelMatrix);
     fragNormal = normalize(basisMatrix * normal);
-    fragTangent = tangent; //normalize(basisMatrix * tangent);
+    fragTangent = normalize(basisMatrix * tangent);
     fragBitangent = (bitangent > 0) ? 1.0 : -1.0;
 
     fragUV = uv;
