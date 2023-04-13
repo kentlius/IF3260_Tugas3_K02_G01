@@ -1,4 +1,4 @@
-import { Renderable } from "./camera.js";
+import { Renderable, RenderData } from "./camera.js";
 import { Perspective, Quat, Transform, Vector3 } from "./primitive.js";
 
 export interface HasTransform {
@@ -13,6 +13,7 @@ export interface HasTransform {
 export class Node3D implements Renderable, HasTransform {
     private _parent?: Node3D;
     private _children: Node3D[];
+    private _child_id?: number;
 
     readonly gl: WebGL2RenderingContext;
     translation: Vector3 = Vector3.ZERO;
@@ -49,6 +50,10 @@ export class Node3D implements Renderable, HasTransform {
         return this._parent;
     }
 
+    get node_id(): number | undefined {
+        return (this._parent === undefined) ? undefined : this._child_id;
+    }
+
     get children_length(): number {
         return this._children.length;
     }
@@ -70,6 +75,7 @@ export class Node3D implements Renderable, HasTransform {
         }
 
         node._parent = this;
+        node._child_id = this._children.length;
         return this._children.push(node);
     }
 
@@ -78,13 +84,18 @@ export class Node3D implements Renderable, HasTransform {
             throw new Error("Index out of bound");
         }
         this._children[i]._parent = undefined;
+        for (let j = i + 1; j < this._children.length; j++) {
+            this._children[j]._child_id = j - 1;
+        }
         this._children.splice(i, 1);
     }
 
-    render(transform: Transform, camera: Perspective, camera_position: Vector3): void {
-        transform = transform.mul(this.transform);
+    render(data: RenderData): void {
+        const prev = data.transform;
+        data.transform = data.transform.mul(this.transform);
         for (const child of this._children) {
-            child.render(transform, camera, camera_position);
+            child.render(data);
         }
+        data.transform = prev;
     }
 }

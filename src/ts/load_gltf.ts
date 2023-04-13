@@ -1,4 +1,4 @@
-import { Mesh, MeshInstance } from "./mesh.js";
+import { Mesh, MeshInstance, Skeleton } from "./mesh.js";
 import { Node3D } from "./node_tree.js";
 import { Quat, Transform, Vector3 } from "./primitive.js";
 import { HasShader, Shader } from "./shader.js";
@@ -220,7 +220,7 @@ export type GltfData = {
     }>,
     skins?: Array<{
         joints: number[],
-        skeletion?: number,
+        skeleton?: number,
         inverseBindMatrices?: number[],
         name?: string,
     }>,
@@ -848,6 +848,8 @@ async function processGltf(gl: WebGL2RenderingContext, data: GltfData, shader: H
         }
     );
 
+    let skins: CachedArray<Skeleton | undefined, any> | undefined;
+
     const nodes = data.nodes === undefined ? undefined : new CachedArray(
         data.nodes,
         async ({
@@ -859,15 +861,20 @@ async function processGltf(gl: WebGL2RenderingContext, data: GltfData, shader: H
             mesh,
             skin,
         }): Promise<Node3D> => {
-            const ret = mesh === undefined ? new Node3D(gl) : new MeshInstance(gl);
-
-            if (children !== undefined) {
-                for (const i of children) {
-                    const c = await nodes?.get(i);
-                    if (c !== undefined) {
-                        ret.add_node(c);
+            let ret: Node3D;
+            if (mesh !== undefined) {
+                const t = ret = new MeshInstance(gl);
+                (async () => {
+                    const m = t.meshes = await meshes?.get(mesh) ?? [];
+                    if (skin !== undefined) {
+                        const s = await skins?.get(skin);
+                        for (const i of m) {
+                            i.skeleton = s;
+                        }
                     }
-                }
+                })();
+            } else {
+                ret = new Node3D(gl);
             }
 
             if (matrix !== undefined) {
@@ -894,15 +901,86 @@ async function processGltf(gl: WebGL2RenderingContext, data: GltfData, shader: H
                 }
             }
 
-            if (mesh !== undefined) {
-                (ret as MeshInstance).meshes = await meshes?.get(mesh) ?? [];
+            if (children !== undefined) {
+                const a = await Promise.all(children.map((i) => nodes!.get(i)));
+                for (const i of a) {
+                    ret.add_node(i as Node3D);
+                }
             }
 
             return ret;
         }
     );
 
-    // TODO: Skinning, animation
+    const parentTree: [number, number][] = [];
+    if (data.nodes !== undefined) {
+        for (let i = 0; i < data.nodes.length; i++) {
+            data.nodes[i].children?.forEach((j, k) => parentTree[j] = [i, k]);
+        }
+    }
+
+    if (data.skins !== undefined) {
+        skins = new CachedArray(
+            data.skins,
+            async ({
+                joints,
+                skeleton,
+                inverseBindMatrices,
+            }) => {
+                const n_ = data.nodes;
+                if (n_ === undefined) {
+                    return undefined;
+                }
+
+                const jointPath = joints.map((n) => {
+                    const ret = [];
+                    let [p, i] = parentTree[n];
+                    while ((p !== undefined) && (p !== skeleton)) {
+                        ret.push(i);
+                        [n, [p, i]] = [p, parentTree[p]];
+                    }
+                    if (skeleton === undefined) {
+                        skeleton = n;
+                    } else if ((p === undefined) || (n !== skeleton)) {
+                        throw new Error(`Root node mismatch (${n} != ${skeleton})`);
+                    }
+                    return ret.reverse();
+                });
+
+                let i = 0;
+                while (true) {
+                    let n: number | undefined;
+                    for (let j = 0; j < jointPath.length; j++) {
+                        const k = jointPath[j][i];
+                        if ((n !== undefined) && (k === undefined) && (n !== k)) {
+                            n = undefined;
+                            break;
+                        }
+                        n = k;
+                    }
+                    if (n === undefined) {
+                        break;
+                    }
+                    i++;
+                }
+
+                let p_: number[] = [];
+                if (i > 0) {
+                    p_ = jointPath[0].slice(0, i);
+                    jointPath.forEach((v) => v.splice(0, i));
+                }
+
+                for (const i of p_) {
+                    skeleton = n_[skeleton as number].children![i];
+                }
+
+                const root = skeleton === undefined ? undefined : await nodes?.get(skeleton);
+                return new Skeleton(jointPath, root, inverseBindMatrices);
+            }
+        );
+    }
+
+    // TODO: Animation
 
     const scenes = data.scenes === undefined ? undefined : new CachedArray(
         data.scenes,

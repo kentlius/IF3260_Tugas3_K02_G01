@@ -1,7 +1,14 @@
 import { Perspective, Quat, Transform, Vector2, Vector3 } from "./primitive.js";
 
+export type RenderData = {
+    transform: Transform,
+    camera: Perspective,
+    camera_position: Vector3,
+    bone_texture: WebGLTexture,
+}
+
 export interface Renderable {
-    render(transform: Transform, camera: Perspective, camera_position: Vector3): void;
+    render(data: RenderData): void;
 }
 
 export interface Renderer {
@@ -10,6 +17,8 @@ export interface Renderer {
 }
 
 abstract class CameraBase implements Renderer {
+    protected bone_texture: WebGLTexture;
+
     readonly gl: WebGL2RenderingContext;
     readonly canvas: HTMLCanvasElement;
     translation: Vector3 = Vector3.ZERO;
@@ -19,6 +28,7 @@ abstract class CameraBase implements Renderer {
     constructor(gl: WebGL2RenderingContext, canvas: HTMLCanvasElement) {
         this.gl = gl;
         this.canvas = canvas;
+        this.bone_texture = gl.createTexture() as WebGLTexture;
     }
 
     get transform(): Transform {
@@ -86,7 +96,12 @@ export class PerspectiveCamera extends CameraBase {
             .mul(this.transform.inverse().post_scale(new Vector3(1, 1, -1)));
 
         for (let r of renders) {
-            r.render(Transform.IDENTITY, persp, this.translation);
+            r.render({
+                transform: Transform.IDENTITY,
+                camera: persp,
+                camera_position: this.translation,
+                bone_texture: this.bone_texture,
+            });
         }
 
         this.gl.flush();
@@ -119,7 +134,12 @@ export class OrthographicCamera extends CameraBase {
             .mul(this.transform.inverse().post_scale(new Vector3(1, 1, -1)));
 
         for (let r of renders) {
-            r.render(Transform.IDENTITY, ortho, this.translation);
+            r.render({
+                transform: Transform.IDENTITY,
+                camera: ortho,
+                camera_position: this.translation,
+                bone_texture: this.bone_texture,
+            });
         }
 
         this.gl.flush();

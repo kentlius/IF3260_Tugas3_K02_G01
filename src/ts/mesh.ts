@@ -1,4 +1,4 @@
-import { Renderable } from "./camera.js";
+import { Renderable, RenderData } from "./camera.js";
 import { Node3D } from "./node_tree.js";
 import { Perspective, Transform, Vector3 } from "./primitive.js";
 import { HasShader } from "./shader.js";
@@ -31,6 +31,7 @@ export class Mesh implements Renderable {
 
     readonly gl: WebGL2RenderingContext;
     shader?: HasShader;
+    skeleton?: Skeleton;
 
     constructor(
         gl: WebGL2RenderingContext,
@@ -156,7 +157,12 @@ export class Mesh implements Renderable {
         }
     }
 
-    render(transform: Transform, camera: Perspective, camera_position: Vector3): void {
+    render({
+        transform,
+        camera,
+        camera_position,
+        bone_texture,
+    }: RenderData): void {
         if (this.shader === undefined) {
             return;
         }
@@ -197,6 +203,11 @@ export class Mesh implements Renderable {
         } else {
             shader.set_attrib("bitangent", 1);
         }
+        if (this.skeleton !== undefined) {
+            this.gl.activeTexture(this.gl.TEXTURE8);
+            this.skeleton.setBoneTexture(this.gl, bone_texture);
+        }
+        shader.set_uniform("boneTexture", 8);
 
         if (this.index_count === undefined) {
             shader.render(this.vertex_count);
@@ -217,12 +228,92 @@ export class MeshInstance extends Node3D {
         super(gl);
     }
 
-    render(transform: Transform, camera: Perspective, camera_position: Vector3): void {
-        const tr = transform.mul(this.transform);
+    render(data: RenderData): void {
+        const prev = data.transform;
+        data.transform = data.transform.mul(this.transform);
         for (const mesh of this.meshes) {
-            mesh.render(tr, camera, camera_position);
+            mesh.render(data);
         }
 
-        super.render(transform, camera, camera_position);
+        data.transform = prev;
+        super.render(data);
+    }
+}
+
+export class Skeleton {
+    root?: Node3D;
+    jointPath: number[][];
+    bind: Float32Array;
+
+    constructor(jointPath: number[][] = [], root?: Node3D, bindMatrices?: ArrayLike<number>) {
+        if ((root === undefined) && (jointPath.length > 0)) {
+            throw new Error("Can only do empty root for empty joint!")
+        }
+        this.root = root;
+        this.jointPath = jointPath;
+        if ((bindMatrices !== undefined) && (bindMatrices.length !== (this.jointPath.length * 16))) {
+            throw new Error(`Bind matrix size mismatch (${bindMatrices.length} != ${this.jointPath.length} * 16)`)
+        }
+
+        if (bindMatrices === undefined) {
+            const bind = new Float32Array(this.jointPath.length * 16);
+            this.bind = bind;
+            for (let i = 0; i < this.jointPath.length; i++) {
+                const tr = this.getJointTransform(i).inverse();
+                bind.set(tr.to_matrix4x4(), i * 16);
+            }
+        } else {
+            this.bind = new Float32Array(bindMatrices);
+        }
+    }
+
+    getJointTransform(i: number): Transform {
+        let node = this.root as Node3D;
+        let ret = node.transform;
+        for (const j of this.jointPath[i]) {
+            node = node.get_child(j);
+            ret = ret.mul(node.transform);
+        }
+        return ret;
+    }
+
+    setBoneTexture(gl: WebGL2RenderingContext, tex: WebGLTexture) {
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+        let width = Math.max(this.jointPath.length, 1);
+        let height = 4;
+        if (width > 1024) {
+            height = (((width + 1023) / 1024) | 0) * 4;
+            width = 1024;
+        }
+
+        const data = new Float32Array(width * height * 4);
+        for (let i = 0; i < this.jointPath.length; i++) {
+            const tr = this.getJointTransform(i);
+            const j = i * 16;
+            data.set(
+                new Perspective(tr)
+                    .mul(new Perspective(this.bind.subarray(j, j + 16)))
+                    .to_matrix4x4(),
+                j,
+            );
+        }
+        for (let i = this.jointPath.length * 16; i < data.length; i += 16) {
+            data.set(Perspective.IDENTITY.to_matrix4x4(), i);
+        }
+
+        gl.texImage2D(
+            gl.TEXTURE_2D,
+            0,
+            gl.RGBA32F,
+            width,
+            height,
+            0,
+            gl.RGBA,
+            gl.FLOAT,
+            data,
+        );
     }
 }
