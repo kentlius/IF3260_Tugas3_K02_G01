@@ -572,10 +572,10 @@ async function processGltf(gl: WebGL2RenderingContext, data: GltfData, shader: H
             sampler,
             source,
         }) => {
-            let magFilter = gl.LINEAR;
-            let minFilter = gl.NEAREST_MIPMAP_LINEAR;
-            let wrapS = gl.REPEAT;
-            let wrapT = gl.REPEAT;
+            let magFilter: number = gl.LINEAR;
+            let minFilter: number = gl.NEAREST_MIPMAP_LINEAR;
+            let wrapS: number = gl.REPEAT;
+            let wrapT: number = gl.REPEAT;
             if (sampler !== undefined) {
                 let s = data.samplers![sampler];
                 if (s.magFilter !== undefined) {
