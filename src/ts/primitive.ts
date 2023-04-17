@@ -191,6 +191,17 @@ export class Vector3 {
             this.x * other.y - this.y * other.x,
         );
     }
+
+    lerp(other: Vector3, t: number): Vector3 {
+        t = Math.min(Math.max(t, 0), 1);
+        const ti = 1 - t;
+
+        return new Vector3(
+            this.x * ti + other.x * t,
+            this.y * ti + other.y * t,
+            this.z * ti + other.z * t,
+        );
+    }
 }
 
 export class Quat {
@@ -316,6 +327,60 @@ export class Quat {
 
     conjugate(): Quat {
         return new Quat(this.w, -this.x, -this.y, -this.z);
+    }
+
+    slerp(other: Quat, t: number): Quat {
+        // Using nlerp instead of classic slerp
+        // http://number-none.com/product/Understanding%20Slerp,%20Then%20Not%20Using%20It/
+
+        t = Math.min(Math.max(t, 0), 1);
+        const ti = 1 - t;
+
+        let { x: tx, y: ty, z: tz, w: tw } = this;
+        let ni = 1 / (tw * tw + tx * tx + ty * ty + tz * tz);
+        tw *= ni;
+        tx *= ni;
+        ty *= ni;
+        tz *= ni;
+
+        let { x: ox, y: oy, z: oz, w: ow } = other;
+        ni = 1 / (ow * ow + ox * ox + oy * oy + oz * oz);
+        ow *= ni;
+        ox *= ni;
+        oy *= ni;
+        oz *= ni;
+
+        let cha = tx * ox + ty * oy + tz * oz + tw * ow;
+        if (cha < 0) {
+            ow = -ow;
+            ox = -ox;
+            oy = -oy;
+            oz = -oz;
+            cha = -cha;
+        }
+
+        const ha = Math.acos(cha);
+        const th = ha * t;
+
+        ow -= tw * cha;
+        ox -= tx * cha;
+        oy -= ty * cha;
+        oz -= tz * cha;
+
+        ni = 1 / (ow * ow + ox * ox + oy * oy + oz * oz);
+        ow *= ni;
+        ox *= ni;
+        oy *= ni;
+        oz *= ni;
+
+        const c = Math.cos(th);
+        const s = Math.sin(th);
+        return new Quat(
+            tw * c + ow * s,
+            tx * c + ox * s,
+            ty * c + oy * s,
+            tz * c + oz * s,
+        );
     }
 
     to_transform(): Transform {
