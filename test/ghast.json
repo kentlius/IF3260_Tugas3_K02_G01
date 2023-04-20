@@ -1,0 +1,227 @@
+{
+    "components": [
+      {
+        "id": "head",
+        "color": "#000000",
+        "texture": "REFLECTIVE",
+        "coordinates": [0, 50, 0],
+        "rotation": [15, 240, 0],
+        "scale": [1, 1, 1],
+        "children": [
+          {
+            "id": "leg_right_front",
+            "color": "#000000",
+            "texture": "REFLECTIVE",
+            "coordinates": [80, -150, 80],
+            "rotation": [0, 0, 0],
+            "scale": [0.1, 0.6, 0.1],
+            "children": []
+          },
+          {
+            "id": "leg_right_center",
+            "color": "#000000",
+            "texture": "REFLECTIVE",
+            "coordinates": [80, -150, 0],
+            "rotation": [0, 0, 0],
+            "scale": [0.1, 1.2, 0.1],
+            "children": []
+          },
+          {
+            "id": "leg_right_back",
+            "color": "#000000",
+            "texture": "REFLECTIVE",
+            "coordinates": [80, -150, -80],
+            "rotation": [0, 0, 0],
+            "scale": [0.1, 0.6, 0.1],
+            "children": []
+          },
+          {
+            "id": "leg_center_front",
+            "color": "#000000",
+            "texture": "REFLECTIVE",
+            "coordinates": [0, -150, 80],
+            "rotation": [0, 0, 0],
+            "scale": [0.1, 1.2, 0.1],
+            "children": []
+          },
+          {
+            "id": "leg_center_center",
+            "color": "#000000",
+            "texture": "REFLECTIVE",
+            "coordinates": [0, -150, 0],
+            "rotation": [0, 0, 0],
+            "scale": [0.1, 1.2, 0.1],
+            "children": []
+          },
+          {
+            "id": "leg_center_back",
+            "color": "#000000",
+            "texture": "REFLECTIVE",
+            "coordinates": [0, -150, -80],
+            "rotation": [0, 0, 0],
+            "scale": [0.1, 1.2, 0.1],
+            "children": []
+          },
+          {
+            "id": "leg_left_front",
+            "color": "#000000",
+            "texture": "REFLECTIVE",
+            "coordinates": [-80, -150, 80],
+            "rotation": [0, 0, 0],
+            "scale": [0.1, 1.2, 0.1],
+            "children": []
+          },
+          {
+            "id": "leg_left_center",
+            "color": "#000000",
+            "texture": "REFLECTIVE",
+            "coordinates": [-80, -150, 0],
+            "rotation": [0, 0, 0],
+            "scale": [0.1, 1.2, 0.1],
+            "children": []
+          },
+          {
+            "id": "leg_left_back",
+            "color": "#000000",
+            "texture": "REFLECTIVE",
+            "coordinates": [-80, -150, -80],
+            "rotation": [0, 0, 0],
+            "scale": [0.1, 1.2, 0.1],
+            "children": []
+          }
+        ]
+      }
+    ],
+    "animations": [
+      {
+        "name": "walk",
+        "duration": 10,
+        "keyframes": [
+          {
+            "time": 0,
+            "transforms": [
+              {
+                "component": "leg_right_front",
+                "rotation": [0, 0, 0]
+              },
+              {
+                "component": "leg_right_center",
+                "rotation": [0, 0, 0]
+              },
+              {
+                "component": "leg_right_back",
+                "rotation": [0, 0, 0]
+              },
+              {
+                "component": "leg_center_front",
+                "rotation": [0, 0, 0]
+              },
+              {
+                "component": "leg_center_center",
+                "rotation": [0, 0, 0]
+              },
+              {
+                "component": "leg_center_back",
+                "rotation": [0, 0, 0]
+              },
+              {
+                "component": "leg_left_front",
+                "rotation": [0, 0, 0]
+              },
+              {
+                "component": "leg_left_center",
+                "rotation": [0, 0, 0]
+              },
+              {
+                "component": "leg_left_back",
+                "rotation": [0, 0, 0]
+              }
+            ]
+          },
+          {
+            "time": 5,
+            "transforms": [
+              {
+                "component": "leg_right_front",
+                "rotation": [0,5, 0, 0]
+              },
+              {
+                "component": "leg_right_center",
+                "rotation": [-0.5, 0, 0]
+              },
+              {
+                "component": "leg_right_back",
+                "rotation": [0.5, 0, 0]
+              },
+              {
+                "component": "leg_center_front",
+                "rotation": [-0.5, 0, 0]
+              },
+              {
+                "component": "leg_center_center",
+                "rotation": [0.5, 0, 0]
+              },
+              {
+                "component": "leg_center_back",
+                "rotation": [-0.5, 0, 0]
+              },
+              {
+                "component": "leg_left_front",
+                "rotation": [0.5, 0, 0]
+              },
+              {
+                "component": "leg_left_center",
+                "rotation": [-0.5, 0, 0]
+              },
+              {
+                "component": "leg_left_back",
+                "rotation": [0.5, 0, 0]
+              }
+            ]
+          },
+          {
+            "time": 10,
+            "transforms": [
+              {
+                "component": "leg_right_front",
+                "rotation": [0, 0, 0]
+              },
+              {
+                "component": "leg_right_center",
+                "rotation": [0, 0, 0]
+              },
+              {
+                "component": "leg_right_back",
+                "rotation": [0, 0, 0]
+              },
+              {
+                "component": "leg_center_front",
+                "rotation": [0, 0, 0]
+              },
+              {
+                "component": "leg_center_center",
+                "rotation": [0, 0, 0]
+              },
+              {
+                "component": "leg_center_back",
+                "rotation": [0, 0, 0]
+              },
+              {
+                "component": "leg_left_front",
+                "rotation": [0, 0, 0]
+              },
+              {
+                "component": "leg_left_center",
+                "rotation": [0, 0, 0]
+              },
+              {
+                "component": "leg_left_back",
+                "rotation": [0, 0, 0]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+  

@@ -1,0 +1,99 @@
+{
+    "components": [
+      {
+        "id": "base",
+        "color": "#FFFFFF",
+        "texture": "CUSTOM",
+        "coordinates": [0, -150, 0],
+        "rotation": [15, 15, 0],
+        "scale": [0.8, 0.8, 0.8],
+        "children": [
+          {
+            "id": "body",
+            "color": "#FFFFFF",
+            "texture": "CUSTOM",
+            "coordinates": [0, 125, 0],
+            "rotation": [0, 0, 0],
+            "scale": [0.6, 0.6, 0.6],
+            "children": [
+              {
+                "id": "head",
+                "color": "#FFFFFF",
+                "texture": "CUSTOM",
+                "coordinates": [0, 130, 0],
+                "rotation": [0, 0, 0],
+                "scale": [0.7, 0.7, 0.7],
+                "children": []
+              },
+              {
+                "id": "left_arm",
+                "color": "#FFFFFF",
+                "texture": "CUSTOM",
+                "coordinates": [-100, 60, 0],
+                "rotation": [120, 0, 315],
+                "scale": [0.1, 0.8, 0.1],
+                "children": []
+              },
+              {
+                "id": "right_arm",
+                "color": "#FFFFFF",
+                "texture": "CUSTOM",
+                "coordinates": [100, 60, 0],
+                "rotation": [120, 0, 45],
+                "scale": [0.1, 0.8, 0.1],
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "animations": [
+      {
+        "name": "hand_swing",
+        "duration": 10,
+        "keyframes": [
+          {
+            "time": 0,
+            "transforms": [
+              {
+                "component": "left_arm",
+                "rotation": [0, 0, 0]
+              },
+              {
+                "component": "right_arm",
+                "rotation": [0, 0, 0]
+              }
+            ]
+          },
+          {
+            "time": 5,
+            "transforms": [
+              {
+                "component": "left_arm",
+                "rotation": [1, 0, 0]
+              },
+              {
+                "component": "right_arm",
+                "rotation": [-1, 0, 0]
+              }
+            ]
+          },
+          {
+            "time": 10,
+            "transforms": [
+              {
+                "component": "left_arm",
+                "rotation": [0, 0, 0]
+              },
+              {
+                "component": "right_arm",
+                "rotation": [0, 0, 0]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+  
