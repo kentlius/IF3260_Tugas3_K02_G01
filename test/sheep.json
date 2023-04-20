@@ -1,0 +1,170 @@
+{
+  "components": [
+    {
+      "id": "body",
+      "color": "#000000",
+      "texture": "CUSTOM",
+      "coordinates": [0, 0, 0],
+      "rotation": [15, 15, 0],
+      "scale": [0.8, 0.8, 1.2],
+      "children": [
+        {
+          "id": "head",
+          "color": "#000000",
+          "texture": "CUSTOM",
+          "coordinates": [0, 100, 150],
+          "rotation": [0, 0, 0],
+          "scale": [0.4, 0.4, 0.4],
+          "children": []
+        },
+        {
+          "id": "leg1_upper",
+          "color": "#000000",
+          "texture": "CUSTOM",
+          "coordinates": [45, -100, 80],
+          "rotation": [0, 0, 0],
+          "scale": [0.3, 0.3, 0.3],
+          "children": [
+            {
+              "id": "leg1_lower",
+              "color": "#000000",
+              "texture": "CUSTOM",
+              "coordinates": [0, -60, 0],
+              "rotation": [0, 0, 0],
+              "scale": [0.25, 0.3, 0.25],
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "leg2_upper",
+          "color": "#000000",
+          "texture": "CUSTOM",
+          "coordinates": [-45, -100, 80],
+          "rotation": [0, 0, 0],
+          "scale": [0.3, 0.3, 0.3],
+          "children": [
+            {
+              "id": "leg2_lower",
+              "color": "#000000",
+              "texture": "CUSTOM",
+              "coordinates": [0, -60, 0],
+              "rotation": [0, 0, 0],
+              "scale": [0.25, 0.3, 0.25],
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "leg3_upper",
+          "color": "#000000",
+          "texture": "CUSTOM",
+          "coordinates": [-45, -100, -80],
+          "rotation": [0, 0, 0],
+          "scale": [0.3, 0.3, 0.3],
+          "children": [
+            {
+              "id": "leg3_lower",
+              "color": "#000000",
+              "texture": "CUSTOM",
+              "coordinates": [0, -60, 0],
+              "rotation": [0, 0, 0],
+              "scale": [0.25, 0.3, 0.25],
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "leg4_upper",
+          "color": "#000000",
+          "texture": "CUSTOM",
+          "coordinates": [45, -100, -80],
+          "rotation": [0, 0, 0],
+          "scale": [0.3, 0.3, 0.3],
+          "children": [
+            {
+              "id": "leg4_lower",
+              "color": "#000000",
+              "texture": "CUSTOM",
+              "coordinates": [0, -60, 0],
+              "rotation": [0, 0, 0],
+              "scale": [0.25, 0.3, 0.25],
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "animations": [
+    {
+      "name": "walk",
+      "duration": 10,
+      "keyframes": [
+        {
+          "time": 0,
+          "transforms": [
+            {
+              "component": "leg1_upper",
+              "rotation": [0, 0, 0]
+            },
+            {
+              "component": "leg2_upper",
+              "rotation": [0, 0, 0]
+            },
+            {
+              "component": "leg3_upper",
+              "rotation": [0, 0, 0]
+            },
+            {
+              "component": "leg4_upper",
+              "rotation": [0, 0, 0]
+            }
+          ]
+        },
+        {
+          "time": 5,
+          "transforms": [
+            {
+              "component": "leg1_upper",
+              "rotation": [1, 0, 0]
+            },
+            {
+              "component": "leg2_upper",
+              "rotation": [-1, 0, 0]
+            },
+            {
+              "component": "leg3_upper",
+              "rotation": [1, 0, 0]
+            },
+            {
+              "component": "leg4_upper",
+              "rotation": [-1, 0, 0]
+            }
+          ]
+        },
+        {
+          "time": 10,
+          "transforms": [
+            {
+              "component": "leg1_upper",
+              "rotation": [-1, 0, 0]
+            },
+            {
+              "component": "leg2_upper",
+              "rotation": [1, 0, 0]
+            },
+            {
+              "component": "leg3_upper",
+              "rotation": [-1, 0, 0]
+            },
+            {
+              "component": "leg4_upper",
+              "rotation": [1, 0, 0]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
