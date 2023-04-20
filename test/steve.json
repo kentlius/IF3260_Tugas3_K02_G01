@@ -1,0 +1,126 @@
+{
+  "components": [
+    {
+      "id": "base",
+      "color": "#FFFFFF",
+      "texture": "BUMP",
+      "coordinates": [0, 0, 0],
+      "rotation": [0, 0, 0],
+      "scale": [0.8, 1, 0.4],
+      "children": [
+        {
+          "id": "head",
+          "color": "#FF0000",
+          "texture": "BUMP",
+          "coordinates": [0, 150, 0],
+          "rotation": [0, 0, 0],
+          "scale": [0.8, 0.8, 0.8],
+          "children": []
+        },
+        {
+          "id": "right_arm",
+          "color": "#FF0000",
+          "texture": "BUMP",
+          "coordinates": [110, 50, 0],
+          "rotation": [0, 0, 0],
+          "scale": [0.3, 0.3, 0.3],
+          "children": [
+            {
+              "id": "right_hand",
+              "color": "#00FF00",
+              "texture": "BUMP",
+              "coordinates": [0, -110, 0],
+              "rotation": [0, 0, 0],
+              "scale": [0.3, 0.8, 0.3],
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "left_arm",
+          "color": "#FF0000",
+          "texture": "BUMP",
+          "coordinates": [-110, 50, 0],
+          "rotation": [0, 0, 0],
+          "scale": [0.3, 0.3, 0.3],
+          "children": [
+            {
+              "id": "left_hand",
+              "color": "#00FF00",
+              "texture": "BUMP",
+              "coordinates": [0, -110, 0],
+              "rotation": [0, 0, 0],
+              "scale": [0.3, 0.8, 0.3],
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "right_leg",
+          "color": "#0000FF",
+          "texture": "BUMP",
+          "coordinates": [40, -150, 0],
+          "rotation": [0, 0, 0],
+          "scale": [0.4, 1, 0.4],
+          "children": []
+        },
+        {
+          "id": "left_leg",
+          "color": "#0000FF",
+          "texture": "BUMP",
+          "coordinates": [-40, -150, 0],
+          "rotation": [0, 0, 0],
+          "scale": [0.4, 1, 0.4],
+          "children": []
+        }
+      ]
+    }
+  ],
+  "animations": [
+    {
+      "name": "walk",
+      "duration": 10,
+      "keyframes": [
+        {
+          "time": 0,
+          "transforms": [
+            {
+              "component": "left_leg",
+              "rotation": [0, 0, 0]
+            },
+            {
+              "component": "right_leg",
+              "rotation": [0, 0, 0]
+            }
+          ]
+        },
+        {
+          "time": 5,
+          "transforms": [
+            {
+              "component": "left_leg",
+              "rotation": [1, 0, 0]
+            },
+            {
+              "component": "right_leg",
+              "rotation": [-1, 0, 0]
+            }
+          ]
+        },
+        {
+          "time": 10,
+          "transforms": [
+            {
+              "component": "left_leg",
+              "rotation": [0, 0, 0]
+            },
+            {
+              "component": "right_leg",
+              "rotation": [0, 0, 0]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

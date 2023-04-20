@@ -1,1 +1,5 @@
-# IF3260_Tugas3_K02_G01
+# 3D Articulated Model
+
+## How to run
+
+use live server extension in vscode to run the index.html file
